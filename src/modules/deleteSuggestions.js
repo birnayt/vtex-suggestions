@@ -56,20 +56,22 @@ async function deleteSuggestions({ accountName, sellerId, skusList }) {
     return false;
   }
 
-  async function deleteSkus(skus) {
+  async function deleteSkus(chunkSkus) {
     const successSkus = [];
     const failedSkus = [];
 
     await Promise.all(
-      skus.map(async (sku) => {
-        const response = await deleteSku(sku);
-        console.log(response);
+      chunkSkus.map(async (skus) => {
+        skus.map(async (sku) => {
+          const response = await deleteSku(sku);
+          console.log(response);
 
-        if (!response) {
-          failedSkus.push(sku);
-        } else {
-          successSkus.push(sku);
-        }
+          if (!response) {
+            failedSkus.push(sku);
+          } else {
+            successSkus.push(sku);
+          }
+        });
       })
     );
 
@@ -80,7 +82,8 @@ async function deleteSuggestions({ accountName, sellerId, skusList }) {
   }
 
   async function run() {
-    const { success, failed } = await deleteSkus(skusList);
+    const skusChunked = chunkList(skusList);
+    const { success, failed } = await deleteSkus(skusChunked);
 
     console.log(`Success: ${success.length}`);
     console.log(`Failed: ${failed.length}`);

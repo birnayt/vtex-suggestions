@@ -42,9 +42,10 @@ function App() {
       //   [itemId]: {
       //     Name: "",
       //     ItemId: "",
-      //     Status: "neutral",
+      //     status: "neutral",
       //   },
-      // }); EXEMPLO
+      // });
+      setItems(data);
     });
   };
 
@@ -90,7 +91,8 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {Object.values(items).map((d: any) => (
+            {/* Object.values(items) */}
+            {items.map((d: any) => (
               <tr key={d.ItemId}>
                 <th>{d.SellerId}</th>
                 <td>{d.ItemId}</td>
