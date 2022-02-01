@@ -114,9 +114,9 @@ const Table = ({ haveFile, data }: any) => {
           {">>"}
         </button>{" "}
         <span>
-          Page{" "}
+          Página{" "}
           <strong>
-            {haveFile ? pageIndex + 1 : pageIndex} of {pageOptions.length}
+            {haveFile ? pageIndex + 1 : pageIndex} de {pageOptions.length}
           </strong>{" "}
         </span>
       </div>
