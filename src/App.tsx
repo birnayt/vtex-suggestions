@@ -5,11 +5,13 @@ import * as XLSX from "xlsx";
 import logo from "./assets/logo.png";
 
 import deleteSuggestions from "./modules/deleteSuggestions";
+import Table from "./components/Table";
 
 function App() {
   const accountName = window.location.hostname.split(".")[0];
 
   const [items, setItems] = useState<TItem[]>([]);
+  const [haveFile, setHaveFile] = useState(false);
   const [sellerId, setSellerId] = useState("");
   const [skusList, setSkusList] = useState<string[]>([]);
 
@@ -69,8 +71,8 @@ function App() {
             type="file"
             onChange={(e: any) => {
               const file: any = e.target.files[0];
-
               readExcel(file);
+              setHaveFile(true)
             }}
           />
         </div>
@@ -83,24 +85,7 @@ function App() {
             Desbloquear SKUS
           </button>
         )}
-        <table className="table container">
-          <thead>
-            <tr>
-              <th scope="col">Item</th>
-              <th scope="col">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* Object.values(items) */}
-            {items.map((d: any) => (
-              <tr key={d.ItemId}>
-                <th>{d.SellerId}</th>
-                <td>{d.ItemId}</td>
-                <td>{d.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Table haveFile={haveFile} data={items} />
       </div>
     </>
   );
