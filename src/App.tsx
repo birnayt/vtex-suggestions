@@ -36,14 +36,20 @@ function App() {
     });
 
     promise.then((data: any) => {
-      setItems(data);
+      // setItems({
+      //   [itemId]: {
+      //     Name: "",
+      //     ItemId: "",
+      //     Status: "neutral",
+      //   },
+      // }); EXEMPLO
     });
   };
 
   useEffect(() => {
     if (items.length > 0) {
+      console.log(items);
       const arrItemsId = items.map((item: TItem) => item.ItemId);
-      console.log(arrItemsId);
       setSellerId(items[0].SellerId);
       setSkusList(arrItemsId);
     }
@@ -76,10 +82,11 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {items.map((d: any) => (
+          {Object.values(items).map((d: any) => (
             <tr key={d.ItemId}>
               <th>{d.SellerId}</th>
               <td>{d.ItemId}</td>
+              <td>{d.status}</td>
             </tr>
           ))}
         </tbody>
