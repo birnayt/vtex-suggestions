@@ -14,3 +14,7 @@ td {
 .pagination {
   padding: 0.5rem;
 }
+
+.container {
+  margin: 10px 0;
+}

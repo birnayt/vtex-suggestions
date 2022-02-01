@@ -11,7 +11,6 @@ function App() {
   const accountName = window.location.hostname.split(".")[0];
 
   const [items, setItems] = useState<TItem[]>([]);
-  const [haveFile, setHaveFile] = useState(false);
   const [sellerId, setSellerId] = useState("");
   const [skusList, setSkusList] = useState<string[]>([]);
 
@@ -72,20 +71,22 @@ function App() {
             onChange={(e: any) => {
               const file: any = e.target.files[0];
               readExcel(file);
-              setHaveFile(true)
             }}
           />
         </div>
         {skusList.length > 0 && (
-          <button
-            onClick={() =>
-              deleteSuggestions({ accountName, sellerId, skusList })
-            }
-          >
-            Desbloquear SKUS
-          </button>
+          <>
+            <Table hasFile={skusList.length > 0} data={items} />
+
+            <button
+              onClick={() =>
+                deleteSuggestions({ accountName, sellerId, skusList })
+              }
+            >
+              Desbloquear SKUS
+            </button>
+          </>
         )}
-        <Table haveFile={haveFile} data={items} />
       </div>
     </>
   );

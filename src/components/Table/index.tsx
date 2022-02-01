@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useTable, usePagination } from "react-table";
 import "./styles.css";
 
-const Table = ({ haveFile, data }: any) => {
+const Table = ({ hasFile, data }: any) => {
   const columns = useMemo(
     () => [
       {
@@ -12,7 +12,7 @@ const Table = ({ haveFile, data }: any) => {
         columns: [
           {
             Header: "Nome",
-            accessor: "ProductName",
+            accessor: "NameComplete",
           },
         ],
       },
@@ -59,7 +59,7 @@ const Table = ({ haveFile, data }: any) => {
     nextPage,
     setPageSize,
     previousPage,
-    state: { pageIndex, pageSize },
+    state: { pageIndex },
   } = useTable(
     {
       columns,
@@ -70,7 +70,7 @@ const Table = ({ haveFile, data }: any) => {
   );
 
   return (
-    <>
+    <div className="container">
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup) => (
@@ -100,27 +100,30 @@ const Table = ({ haveFile, data }: any) => {
         Pagination can be built however you'd like. 
         This is just a very basic UI implementation:
       */}
-      <div className="pagination">
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {"<<"}
-        </button>{" "}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          {"<"}
-        </button>{" "}
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          {">"}
-        </button>{" "}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {">>"}
-        </button>{" "}
-        <span>
-          Página{" "}
-          <strong>
-            {haveFile ? pageIndex + 1 : pageIndex} de {pageOptions.length}
-          </strong>{" "}
-        </span>
-      </div>
-    </>
+        <div className="pagination">
+          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+            {"<<"}
+          </button>{" "}
+          <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+            {"<"}
+          </button>{" "}
+          <button onClick={() => nextPage()} disabled={!canNextPage}>
+            {">"}
+          </button>{" "}
+          <button
+            onClick={() => gotoPage(pageCount - 1)}
+            disabled={!canNextPage}
+          >
+            {">>"}
+          </button>{" "}
+          <span>
+            Página{" "}
+            <strong>
+              {pageIndex + 1} de {pageOptions.length}
+            </strong>{" "}
+          </span>
+        </div>
+    </div>
   );
 };
 
