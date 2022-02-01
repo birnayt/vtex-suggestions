@@ -1,0 +1,43 @@
+body,
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #dcc6b7;
+}
+
+.header__container {
+  width: 100vw;
+  height: 6rem;
+  > img {
+    z-index: 1;
+    position: absolute;
+    width: 120px;
+    background-color: white;
+    margin: 2rem;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    background-image: url("https://www.somagrupo.com.br/wp-content/themes/mziq_grupo-soma_ri/img/header-before.png");
+    width: 498px;
+    height: 186px;
+    transform: translateY(-20%);
+    z-index: 0;
+  }
+}
+
+.content__container {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.send-file__container > input {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 1rem;
+}

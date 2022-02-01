@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
+import "./styles.scss";
 import * as XLSX from "xlsx";
+import logo from "./assets/logo.png";
 
 import deleteSuggestions from "./modules/deleteSuggestions";
 
@@ -57,40 +59,47 @@ function App() {
 
   return (
     <>
-      <div>
-        <input
-          type="file"
-          onChange={(e: any) => {
-            const file: any = e.target.files[0];
-
-            readExcel(file);
-          }}
-        />
+      <div className="header__container">
+        <img src={logo} alt="logo grupo soma" />
       </div>
-      {skusList.length > 0 && (
-        <button
-          onClick={() => deleteSuggestions({ accountName, sellerId, skusList })}
-        >
-          Desbloquear SKUS
-        </button>
-      )}
-      <table className="table container">
-        <thead>
-          <tr>
-            <th scope="col">Item</th>
-            <th scope="col">Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.values(items).map((d: any) => (
-            <tr key={d.ItemId}>
-              <th>{d.SellerId}</th>
-              <td>{d.ItemId}</td>
-              <td>{d.status}</td>
+      <div className="content__container">
+        <div className="send-file__container">
+          <input
+            type="file"
+            onChange={(e: any) => {
+              const file: any = e.target.files[0];
+
+              readExcel(file);
+            }}
+          />
+        </div>
+        {skusList.length > 0 && (
+          <button
+            onClick={() =>
+              deleteSuggestions({ accountName, sellerId, skusList })
+            }
+          >
+            Desbloquear SKUS
+          </button>
+        )}
+        <table className="table container">
+          <thead>
+            <tr>
+              <th scope="col">Item</th>
+              <th scope="col">Description</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {Object.values(items).map((d: any) => (
+              <tr key={d.ItemId}>
+                <th>{d.SellerId}</th>
+                <td>{d.ItemId}</td>
+                <td>{d.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }
