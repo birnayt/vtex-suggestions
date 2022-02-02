@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
-import { useTable, usePagination } from "react-table";
+import { useTable, usePagination, useSortBy } from "react-table";
 import "./styles.css";
 
-const Table = ({ hasFile, data }: any) => {
+const Table = ({ hasFile, data }) => {
   const columns = useMemo(
     () => [
       {
@@ -57,7 +57,6 @@ const Table = ({ hasFile, data }: any) => {
     pageCount,
     gotoPage,
     nextPage,
-    setPageSize,
     previousPage,
     state: { pageIndex },
   } = useTable(
@@ -66,6 +65,7 @@ const Table = ({ hasFile, data }: any) => {
       data,
       initialState: { pageIndex: 0, pageSize: 10 },
     },
+    useSortBy,
     usePagination
   );
 
@@ -76,17 +76,26 @@ const Table = ({ hasFile, data }: any) => {
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  {column.render("Header")}
+                  <span>
+                    {column.isSorted
+                      ? column.isSortedDesc
+                        ? " 🔽"
+                        : " 🔼"
+                      : ""}
+                  </span>
+                </th>
               ))}
             </tr>
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {page.map((row: any, i: any) => {
+          {page.map((row, i) => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
-                {row.cells.map((cell: any) => {
+                {row.cells.map((cell) => {
                   return (
                     <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                   );
@@ -100,29 +109,26 @@ const Table = ({ hasFile, data }: any) => {
         Pagination can be built however you'd like. 
         This is just a very basic UI implementation:
       */}
-        <div className="pagination">
-          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-            {"<<"}
-          </button>{" "}
-          <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-            {"<"}
-          </button>{" "}
-          <button onClick={() => nextPage()} disabled={!canNextPage}>
-            {">"}
-          </button>{" "}
-          <button
-            onClick={() => gotoPage(pageCount - 1)}
-            disabled={!canNextPage}
-          >
-            {">>"}
-          </button>{" "}
-          <span>
-            Página{" "}
-            <strong>
-              {pageIndex + 1} de {pageOptions.length}
-            </strong>{" "}
-          </span>
-        </div>
+      <div className="pagination">
+        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+          {"<<"}
+        </button>{" "}
+        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+          {"<"}
+        </button>{" "}
+        <button onClick={() => nextPage()} disabled={!canNextPage}>
+          {">"}
+        </button>{" "}
+        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+          {">>"}
+        </button>{" "}
+        <span>
+          Página{" "}
+          <strong>
+            {pageIndex + 1} de {pageOptions.length}
+          </strong>{" "}
+        </span>
+      </div>
     </div>
   );
 };
