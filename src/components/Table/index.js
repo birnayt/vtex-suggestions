@@ -2,39 +2,33 @@ import React, { useMemo } from "react";
 import { useTable, usePagination, useSortBy } from "react-table";
 import "./styles.css";
 
-const Table = ({ hasFile, data }) => {
+const Table = ({ data }) => {
   const columns = useMemo(
     () => [
       {
-        // first group - TV Show
         Header: "Produtos",
-        // First group columns
         columns: [
           {
             Header: "Nome",
-            accessor: "NameComplete",
+            accessor: "name",
           },
         ],
       },
       {
-        // first group - TV Show
         Header: "ID",
-        // First group columns
         columns: [
           {
             Header: "ID - Vendedor",
-            accessor: "SellerId",
+            accessor: "sellerId",
           },
           {
             Header: "ID - Item",
-            accessor: "ItemId",
+            accessor: "itemId",
           },
         ],
       },
       {
-        // first group - TV Show
         Header: "Status",
-        // First group columns
         columns: [
           {
             Header: "Status",

@@ -11,8 +11,10 @@ function App() {
   const accountName = window.location.hostname.split(".")[0];
 
   const [items, setItems] = useState<TItem[]>([]);
+  const [data, setData] = useState([]);
   const [sellerId, setSellerId] = useState("");
   const [skusList, setSkusList] = useState<string[]>([]);
+  const formattedItems: any = [];
 
   const readExcel = (file: any) => {
     const promise = new Promise((resolve, reject) => {
@@ -39,20 +41,33 @@ function App() {
     });
 
     promise.then((data: any) => {
-      // setItems({
-      //   [itemId]: {
-      //     Name: "",
-      //     ItemId: "",
-      //     status: "neutral",
-      //   },
-      // });
+      data.forEach((item: any) => {
+        const possibleStatus = ["Denied", "Neutral", "Approved"];
+        const productName = item.NameComplete;
+        const brandName = item.BrandName;
+        const itemId = item.ItemId;
+        const productId = item.ProductId;
+        const sellerId = item.SellerId;
+        const status =
+          possibleStatus[Math.floor(Math.random() * possibleStatus.length)];
+
+        const formattedItem = {
+          name: productName,
+          brand: brandName,
+          itemId: itemId,
+          productId: productId,
+          status: status,
+          sellerId: sellerId,
+        };
+        formattedItems.push(formattedItem);
+      });
+      setData(formattedItems);
       setItems(data);
     });
   };
 
   useEffect(() => {
     if (items.length > 0) {
-      console.log(items);
       const arrItemsId = items.map((item: TItem) => item.ItemId);
       setSellerId(items[0].SellerId);
       setSkusList(arrItemsId);
@@ -76,7 +91,7 @@ function App() {
         </div>
         {skusList.length > 0 && (
           <>
-            <Table hasFile={skusList.length > 0} data={items} />
+            <Table data={data} />
 
             <button
               onClick={() =>
