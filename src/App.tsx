@@ -48,6 +48,7 @@ function App() {
         const itemId = item.ItemId;
         const productId = item.ProductId;
         const sellerId = item.SellerId;
+        //TODO - FETCH ACTUAL STATUS
         const status =
           possibleStatus[Math.floor(Math.random() * possibleStatus.length)];
 
