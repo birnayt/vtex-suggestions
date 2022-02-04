@@ -14,9 +14,11 @@ function App() {
   const [data, setData] = useState([]);
   const [sellerId, setSellerId] = useState("");
   const [skusList, setSkusList] = useState<string[]>([]);
-  const formattedItems: any = [];
+  const [results, setResults] = useState<any>();
 
   const readExcel = (file: any) => {
+    const formattedItems: any = {};
+
     const promise = new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsArrayBuffer(file);
@@ -50,7 +52,7 @@ function App() {
         const sellerId = item.SellerId;
         //TODO - FETCH ACTUAL STATUS
         const status =
-          possibleStatus[Math.floor(Math.random() * possibleStatus.length)];
+          possibleStatus[1];
 
         const formattedItem = {
           name: productName,
@@ -60,7 +62,7 @@ function App() {
           status: status,
           sellerId: sellerId,
         };
-        formattedItems.push(formattedItem);
+        formattedItems[itemId] = formattedItem;
       });
       setData(formattedItems);
       setItems(data);
@@ -74,6 +76,28 @@ function App() {
       setSkusList(arrItemsId);
     }
   }, [items]);
+
+  const handleUnblock = async () => {
+    const result: any = await deleteSuggestions({ accountName, sellerId, skusList });
+
+    setResults(result)
+  }
+
+  useEffect(() => {
+    if (results) {
+      const { success, failed } = results;
+      const copyData: any = {...data};
+
+      success.forEach((skuId: string) => {
+        copyData[skuId].status = "Approved";
+      })
+      failed.forEach((skuId: string) => {
+        copyData[skuId].status = "Denied";
+      })
+
+      setData(copyData);
+    }
+  }, [results])
 
   return (
     <>
@@ -92,12 +116,10 @@ function App() {
         </div>
         {skusList.length > 0 && (
           <>
-            <Table data={data} />
+            <Table data={Object.values(data)} />
 
             <button
-              onClick={() =>
-                deleteSuggestions({ accountName, sellerId, skusList })
-              }
+              onClick={handleUnblock}
             >
               Desbloquear SKUS
             </button>
