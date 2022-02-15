@@ -1,22 +1,24 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import "./styles.scss";
 import * as XLSX from "xlsx";
-import logo from "./assets/logo.png";
+import logo from "./assets/soma-logo.png";
 
-import deleteSuggestions from "./modules/deleteSuggestions";
 import Table from "./components/Table";
 
 function App() {
-  const accountName = window.location.hostname.split(".")[0];
+  // const accountName = window.location.hostname.split(".")[0];
 
   const [items, setItems] = useState<TItem[]>([]);
   const [data, setData] = useState([]);
   const [sellerId, setSellerId] = useState("");
   const [skusList, setSkusList] = useState<string[]>([]);
-  const formattedItems: any = [];
+  const [results, setResults] = useState<any>();
 
   const readExcel = (file: any) => {
+    const formattedItems: any = {};
+
     const promise = new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsArrayBuffer(file);
@@ -49,8 +51,7 @@ function App() {
         const productId = item.ProductId;
         const sellerId = item.SellerId;
         //TODO - FETCH ACTUAL STATUS
-        const status =
-          possibleStatus[Math.floor(Math.random() * possibleStatus.length)];
+        const status = possibleStatus[1];
 
         const formattedItem = {
           name: productName,
@@ -60,7 +61,7 @@ function App() {
           status: status,
           sellerId: sellerId,
         };
-        formattedItems.push(formattedItem);
+        formattedItems[itemId] = formattedItem;
       });
       setData(formattedItems);
       setItems(data);
@@ -74,6 +75,38 @@ function App() {
       setSkusList(arrItemsId);
     }
   }, [items]);
+
+  const handleUnblock = async () => {
+    const result: any = await fetch(
+      "https://homologappoffpremium.vtex.app/api/suggestions/delete",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          accountName: "lojaoffpremium",
+          sellerId,
+          skusList,
+        }),
+      }
+    );
+    console.log(result, "data");
+    setResults(result);
+  };
+
+  useEffect(() => {
+    if (results) {
+      const { success, failed } = results;
+      const copyData: any = { ...data };
+
+      success.forEach((skuId: string) => {
+        copyData[skuId].status = "Approved";
+      });
+      failed.forEach((skuId: string) => {
+        copyData[skuId].status = "Denied";
+      });
+
+      setData(copyData);
+    }
+  }, [results]);
 
   return (
     <>
@@ -92,15 +125,9 @@ function App() {
         </div>
         {skusList.length > 0 && (
           <>
-            <Table data={data} />
+            <Table data={Object.values(data)} />
 
-            <button
-              onClick={() =>
-                deleteSuggestions({ accountName, sellerId, skusList })
-              }
-            >
-              Desbloquear SKUS
-            </button>
+            <button onClick={handleUnblock}>Desbloquear SKUS</button>
           </>
         )}
       </div>

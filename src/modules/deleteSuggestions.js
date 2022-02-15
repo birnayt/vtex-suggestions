@@ -1,18 +1,4 @@
-function throttle(callback, limit) {
-  var waiting = false; // Initially, we're not waiting
-  return function () {
-    // We return a throttled function
-    if (!waiting) {
-      // If we're not waiting
-      callback.apply(this, arguments); // Execute users function
-      waiting = true; // Prevent future invocations
-      setTimeout(function () {
-        // After a period of time
-        waiting = false; // And allow future invocations
-      }, limit);
-    }
-  };
-}
+import * as Promise from "bluebird";
 
 async function deleteSuggestions({ accountName, sellerId, skusList }) {
   const { REACT_APP_TOKEN, REACT_APP_KEY } = process.env;
@@ -24,66 +10,40 @@ async function deleteSuggestions({ accountName, sellerId, skusList }) {
     "X-VTEX-API-APPKEY": REACT_APP_KEY,
   };
 
-  function chunkList(skusList) {
-    const chunkedList = [];
-
-    let i,
-      j,
-      temporary,
-      chunk = 100;
-    for (i = 0, j = skusList.length; i < j; i += chunk) {
-      temporary = skusList.slice(i, i + chunk);
-
-      chunkedList.push(temporary);
-    }
-
-    return chunkedList;
-  }
-
-  async function deleteSku(sku) {
+  async function deleteSku(sku, results) {
     const url = `${BASE_URL}/${sku}`;
     const header = { ...baseHeader };
 
-    const response = await fetch(url, {
-      method: "DELETE",
-      headers: header,
-    });
-
-    if (response.status === 200 || response.status === 204) {
+    try {
+      await fetch(url, {
+        method: "DELETE",
+        headers: header,
+      });
+  
+      results.success.push(sku);
       return true;
+    } catch(error) {
+      console.error(error)
+      results.failed.push(sku);
+      return false;
     }
-
-    return false;
   }
 
-  async function deleteSkus(chunkSkus) {
-    const successSkus = [];
-    const failedSkus = [];
+  async function deleteSkus(skus) {
+    const results = {
+      success: [],
+      failed: []
+    }
 
-    await Promise.all(
-      chunkSkus.map(async (skus) => {
-        skus.map(async (sku) => {
-          const response = await deleteSku(sku);
-          console.log(response);
+    await Promise.map(skus, (sku) => {
+      return deleteSku(sku, results);
+    }, {concurrency: 5});
 
-          if (!response) {
-            failedSkus.push(sku);
-          } else {
-            successSkus.push(sku);
-          }
-        });
-      })
-    );
-
-    return {
-      success: successSkus,
-      failed: failedSkus,
-    };
+    return results;
   }
 
   async function run() {
-    const skusChunked = chunkList(skusList);
-    const { success, failed } = await deleteSkus(skusChunked);
+    const { success, failed } = await deleteSkus(skusList);
 
     console.log(`Success: ${success.length}`);
     console.log(`Failed: ${failed.length}`);
@@ -95,7 +55,9 @@ async function deleteSuggestions({ accountName, sellerId, skusList }) {
   }
 
   try {
-    await run();
+    const result = await run();
+
+    return result;
   } catch (error) {
     console.error(error);
   }
